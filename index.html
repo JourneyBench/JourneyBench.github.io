@@ -208,6 +208,7 @@
       <div class="column is-four-fifths">
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
+          <p>
           Existing vision-language understanding benchmarks largely consist of images of objects in their usual contexts.
           As a consequence, recent multimodal large language models can perform well with only a shallow visual understanding by relying on background language biases. 
           Thus, strong performance on these benchmarks does not necessarily correlate with strong visual understanding. 
@@ -220,8 +221,30 @@
         </div>
       </div>
     </div>
-    <!--/ Abstract. -->
-
+  </div>
+</section>
+  <div id="leaderboard1">
+  </div>
+  <script>
+    // JavaScript to fetch and insert the HTML
+    fetch('./static/images/leaderboard1.html')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('leaderboard1').innerHTML = data;
+        })
+        .catch(error => console.error('Error loading the HTML file:', error));
+  </script>
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Contact</h2>
+        <div class="content has-text-justified">
+          <p>For any questions about JourneyBench, please reach out to <a href= "journeybench.contact@gmail.com">journeybench.contact@gmail.com</a>.</p>
+        </div>
+      </div>
+    </div>
+  </div>    
 
 <!--<section class="section" id="BibTeX">
   <div class="container is-max-desktop content">
