@@ -157,25 +157,23 @@ body {
 }
 
 table {
-  width: 100%;
   border-collapse: collapse;
   table-layout: auto;
-}
-
-th, td {
-  padding: 12px;
   border: 1px solid #ddd;
-  text-align: left;
-  white-space: nowrap;
-}
-tr td:last-child {
-    width: 1%;
-    white-space: nowrap;
 }
 
 th {
-  background-color: #f2f2f2;
-  cursor: pointer;
+  padding: 2px 5px;
+  border: 1px solid #ddd;
+}
+
+td {
+  padding: 2px 5px;
+  border: 1px solid #ddd;
+}
+
+thead {
+  background: #ddd;
 }
 
 th:hover {
