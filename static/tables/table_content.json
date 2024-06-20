@@ -1,5 +1,5 @@
 [
-    {"name": "John", "age": 30, "city": "New York"},
-    {"name": "Anna", "age": 22, "city": "London"},
-    {"name": "Mike", "age": 32, "city": "Chicago"}
+    {"Mean Rank":2.83,"Method":"GPT-4o","MCOT":62.18,"Multi-image VQA":56.39,"Text R@1":"-", "Image R@1":"-","Captioning":32.56,"VQA + Hall. Trig.":47.86},
+    {"Mean Rank":3.16,"Method":"LLaVA-Next-Qwen 110B","MCOT":40.43,"Multi-image VQA":"-","Text R@1":"-", "Image R@1":"-","Captioning":27.18,"VQA + Hall. Trig.":60.03}
+
 ]

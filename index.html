@@ -291,6 +291,7 @@
       </div>
     </div>
   </div>    
+</section>
 <!--<section class="section" id="BibTeX">
   <div class="container is-max-desktop content">
     <h2 class="title">BibTeX</h2>
@@ -303,19 +304,24 @@
   </div>
 </section>-->
 
-<table id="myTable">
+
+<table id="leaderboard" style="width: 100%;">
   <thead>
       <tr>
-          <th>Name</th>
-          <th>Age</th>
-          <th>City</th>
+          <th onclick="sortTable(0)">Mean Rank</th>
+          <th onclick="sortTable(1)">Method</th>
+          <th onclick="sortTable(2)">MCOT</th>
+          <th onclick="sortTable(3)">Multi-image VQA</th>
+          <th onclick="sortTable(4)">Text R@1</th>
+          <th onclick="sortTable(5)">Image R@1</th>
+          <th onclick="sortTable(6)">Captioning</th>
+          <th onclick="sortTable(7)">VQA + Hall. Trig.</th>
       </tr>
   </thead>
   <tbody>
       <!-- Table rows will go here -->
   </tbody>
 </table>
-
 
 <footer class="footer">
   <div class="content has-text-centered">

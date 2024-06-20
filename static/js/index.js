@@ -18,32 +18,73 @@ function setInterpolationImage(i) {
   image.oncontextmenu = function() { return false; };
   $('#interpolation-image-wrapper').empty().append(image);
 }
-
 document.addEventListener('DOMContentLoaded', function() {
-  fetch(TABLE_CONTENT_BASE)
+  fetch("./static/tables/table_content.json")
       .then(response => response.json())
       .then(data => {
-          let tableBody = document.querySelector('#myTable tbody');
-          data.forEach(item => {
-              let row = document.createElement('tr');
-
-              let cellName = document.createElement('td');
-              cellName.textContent = item.name;
-              row.appendChild(cellName);
-
-              let cellAge = document.createElement('td');
-              cellAge.textContent = item.age;
-              row.appendChild(cellAge);
-
-              let cellCity = document.createElement('td');
-              cellCity.textContent = item.city;
-              row.appendChild(cellCity);
-
-              tableBody.appendChild(row);
-          });
+          populateTable(data);
+          sortTable(0,true); 
       })
       .catch(error => console.error('Error loading data:', error));
 });
+
+function populateTable(data) {
+  let tableBody = document.querySelector('#leaderboard tbody');
+  tableBody.innerHTML = '';  // Clear existing content
+  data.forEach(item => {
+      let row = document.createElement('tr');
+
+      Object.values(item).forEach(text => {
+          let cell = document.createElement('td');
+          cell.textContent = text;
+          row.appendChild(cell);
+      });
+
+      tableBody.appendChild(row);
+  });
+}
+
+function sortTable(n,initialSort = false) {
+  let table = document.getElementById("leaderboard");
+  let rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+  switching = true;
+  dir = "asc"; // Set the sorting direction to ascending initially
+
+  table.querySelectorAll("th").forEach(th => th.classList.remove("sorted-asc", "sorted-desc"));
+
+  while (switching) {
+      switching = false;
+      rows = table.rows;
+      
+      for (i = 1; i < (rows.length - 1); i++) {
+          shouldSwitch = false;
+          x = rows[i].getElementsByTagName("TD")[n];
+          y = rows[i + 1].getElementsByTagName("TD")[n];
+          
+          if (dir == "asc") {
+              if (x.textContent.toLowerCase() > y.textContent.toLowerCase()) {
+                  shouldSwitch = true;
+              }
+          } else if (dir == "desc") {
+              if (x.textContent.toLowerCase() < y.textContent.toLowerCase()) {
+                  shouldSwitch = true;
+              }
+          }
+          if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            switching = true;
+            switchcount++;
+        }
+      }
+      if (switchcount === 0 && dir === "asc" && !initialSort) {
+            dir = "desc";
+            switching = true;
+      }
+  }
+  table.querySelector(`th:nth-child(${n + 1})`).classList.add(dir === "asc" ? "sorted-asc" : "sorted-desc");
+
+}
+
 
 $(document).ready(function() {
     // Check for click events on the navbar burger icon
@@ -98,5 +139,4 @@ $(document).ready(function() {
     // $('#interpolation-slider').prop('max', NUM_INTERP_FRAMES - 1);
 
     // bulmaSlider.attach();
-
 })
