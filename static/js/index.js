@@ -2,7 +2,7 @@ window.HELP_IMPROVE_VIDEOJS = false;
 
 var INTERP_BASE = "./static/interpolation/stacked";
 var NUM_INTERP_FRAMES = 240;
-
+var TABLE_CONTENT_BASE = "./static/tables/table_content.json";
 var interp_images = [];
 function preloadInterpolationImages() {
   for (var i = 0; i < NUM_INTERP_FRAMES; i++) {
@@ -19,6 +19,31 @@ function setInterpolationImage(i) {
   $('#interpolation-image-wrapper').empty().append(image);
 }
 
+document.addEventListener('DOMContentLoaded', function() {
+  fetch(TABLE_CONTENT_BASE)
+      .then(response => response.json())
+      .then(data => {
+          let tableBody = document.querySelector('#myTable tbody');
+          data.forEach(item => {
+              let row = document.createElement('tr');
+
+              let cellName = document.createElement('td');
+              cellName.textContent = item.name;
+              row.appendChild(cellName);
+
+              let cellAge = document.createElement('td');
+              cellAge.textContent = item.age;
+              row.appendChild(cellAge);
+
+              let cellCity = document.createElement('td');
+              cellCity.textContent = item.city;
+              row.appendChild(cellCity);
+
+              tableBody.appendChild(row);
+          });
+      })
+      .catch(error => console.error('Error loading data:', error));
+});
 
 $(document).ready(function() {
     // Check for click events on the navbar burger icon
@@ -57,7 +82,6 @@ $(document).ready(function() {
     		console.log(state);
     	});
     }
-
     /*var player = document.getElementById('interpolation-video');
     player.addEventListener('loadedmetadata', function() {
       $('#interpolation-slider').on('input', function(event) {

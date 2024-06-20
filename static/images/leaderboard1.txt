@@ -1,0 +1,3 @@
+Model;Mean Rank;MCOT;Multi-image VQA;Caption;Text R1;Image R1;VQA+Hall. Trig.
+GPT-4o;2.83;62.18;56.39;32.56;0;0;47.86
+LLaVA-Next-Qwen 110B;3.16;40.43;0;27.18;0;0;60.03
