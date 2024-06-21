@@ -30,13 +30,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function populateTable(data) {
   let tableBody = document.querySelector('#leaderboard tbody');
+  let entries = document.querySelector('#leaderboard thead').innerText.split("\t")
   tableBody.innerHTML = '';  // Clear existing content
   data.forEach(item => {
       let row = document.createElement('tr');
 
-      Object.values(item).forEach(text => {
+      entries.forEach(entry => {
           let cell = document.createElement('td');
-          cell.textContent = text;
+          cell.textContent = item[entry];
           row.appendChild(cell);
       });
 
@@ -60,13 +61,18 @@ function sortTable(n,initialSort = false) {
           shouldSwitch = false;
           x = rows[i].getElementsByTagName("TD")[n];
           y = rows[i + 1].getElementsByTagName("TD")[n];
-          
+          let xContent = x.textContent.trim();
+          let yContent = y.textContent.trim();
+          if (!isNaN(xContent) && !isNaN(yContent)) {
+            xContent = parseFloat(xContent);
+            yContent = parseFloat(yContent);
+        }
           if (dir == "asc") {
-              if (x.textContent.toLowerCase() > y.textContent.toLowerCase()) {
+              if (xContent > yContent) {
                   shouldSwitch = true;
               }
           } else if (dir == "desc") {
-              if (x.textContent.toLowerCase() < y.textContent.toLowerCase()) {
+              if (xContent < yContent) {
                   shouldSwitch = true;
               }
           }
