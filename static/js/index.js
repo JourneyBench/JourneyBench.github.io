@@ -2,24 +2,11 @@ window.HELP_IMPROVE_VIDEOJS = false;
 
 var INTERP_BASE = "./static/interpolation/stacked";
 var NUM_INTERP_FRAMES = 240;
-var TABLE_CONTENT_BASE = "./static/tables/table_content.json";
+var TABLE_CONTENT_BASE = "./data/tables/table_content.json";
 var interp_images = [];
-function preloadInterpolationImages() {
-  for (var i = 0; i < NUM_INTERP_FRAMES; i++) {
-    var path = INTERP_BASE + '/' + String(i).padStart(6, '0') + '.jpg';
-    interp_images[i] = new Image();
-    interp_images[i].src = path;
-  }
-}
 
-function setInterpolationImage(i) {
-  var image = interp_images[i];
-  image.ondragstart = function() { return false; };
-  image.oncontextmenu = function() { return false; };
-  $('#interpolation-image-wrapper').empty().append(image);
-}
 document.addEventListener('DOMContentLoaded', function() {
-  fetch("./static/tables/table_content.json")
+  fetch("./data/tables/table_content.json")
       .then(response => response.json())
       .then(data => {
           populateTable(data);
@@ -27,6 +14,65 @@ document.addEventListener('DOMContentLoaded', function() {
       })
       .catch(error => console.error('Error loading data:', error));
 });
+function refreshData(){
+  let navbar = document.getElementById('browser-navbar');
+  let currentTask = navbar.innerText;
+  currentTask = currentTask.replace(/(\r\n|\n|\r)/gm, "");
+  displayDatapoints(currentTask);
+  return false;
+}
+function displayMCOT(itemdiv, data){
+  let img = document.createElement('img');
+  img.src = data['url'];
+  let p = document.createElement('p');
+  p.innerHTML = '<b>Question</b><br>'+data['question']+'<br><b>Answer</b><br>'+data['answer'];
+  itemdiv.appendChild(img);
+  itemdiv.appendChild(p);
+}
+function displayDatapoints(task) {
+  // Step 1: Load the JSON file
+  let navbar = document.getElementById('browser-navbar');
+  navbar.innerText = task;
+  let displayData = displayMCOT;
+  fetch(`./static/examples/${task}.json`)
+      .then(response => {
+          if (!response.ok) {
+              throw new Error(`Failed to load ${task}.json`);
+          }
+          return response.json();
+      })
+      .then(data => {
+          // Step 2: Randomly sample 8 items
+          let items = data;
+          if (!Array.isArray(items) || items.length < 8) {
+              throw new Error('Not enough items in the JSON list!');
+          }
+
+          // Shuffle and pick 8 random items
+          items = items.sort(() => 0.5 - Math.random()).slice(0, 8);
+
+          // Step 3: Locate the div with id="results-carousel"
+          const carousel = document.getElementById('results-carousel');
+          if (!carousel) {
+              throw new Error('Could not find the div with id="results-carousel"');
+          }
+
+          // Replace the contents of divs with class="item item-<i>"
+          items.forEach((item, index) => {
+              const itemDivs = carousel.querySelectorAll(`.item.item-${index}`);
+              if (itemDivs) {
+                itemDivs.forEach((itemDiv,_) =>{
+                  itemDiv.innerHTML='';
+                  displayData(itemDiv,item);});
+              } else {
+                  console.warn(`Could not find the div with class "item item-${index}"`);
+              }
+          });
+      })
+      .catch(error => {
+          console.error('Error:', error);
+      });
+}
 
 function populateTable(data) {
   let tableBody = document.querySelector('#leaderboard tbody');
@@ -129,6 +175,7 @@ $(document).ready(function() {
     		console.log(state);
     	});
     }
+    displayDatapoints("MCOT");
     /*var player = document.getElementById('interpolation-video');
     player.addEventListener('loadedmetadata', function() {
       $('#interpolation-slider').on('input', function(event) {
