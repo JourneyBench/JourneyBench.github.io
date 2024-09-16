@@ -2,11 +2,11 @@ window.HELP_IMPROVE_VIDEOJS = false;
 
 var INTERP_BASE = "./static/interpolation/stacked";
 var NUM_INTERP_FRAMES = 240;
-var TABLE_CONTENT_BASE = "./data/tables/table_content.json";
+var TABLE_CONTENT_BASE = "./static/data/leaderboard_content.json";
 var interp_images = [];
 
 document.addEventListener('DOMContentLoaded', function() {
-  fetch("./data/tables/table_content.json")
+  fetch(TABLE_CONTENT_BASE)
       .then(response => response.json())
       .then(data => {
           populateTable(data);
@@ -14,6 +14,27 @@ document.addEventListener('DOMContentLoaded', function() {
       })
       .catch(error => console.error('Error loading data:', error));
 });
+
+function createScroller(itemdiv,direction, height=null){
+  let scroll_container = document.createElement('div');
+  itemdiv.appendChild(scroll_container);
+  scroll_container.classList.add("scroll-container-"+direction);
+  if (height){
+    scroll_container.style.height=height;
+  }
+  let scroll_content = document.createElement('div');
+  scroll_container.appendChild(scroll_content);
+  scroll_content.classList.add("scroll-content-"+direction);
+  return scroll_content;
+}
+
+function createDatapointImage(url){
+  let img = document.createElement('img');
+  img.src = url;
+  img.classList.add('datapointImg');
+  return img;
+}
+
 function refreshData(){
   let navbar = document.getElementById('browser-navbar');
   let currentTask = navbar.innerText;
@@ -22,19 +43,106 @@ function refreshData(){
   return false;
 }
 function displayMCOT(itemdiv, data){
-  let img = document.createElement('img');
-  img.src = data['url'];
+  let scroll_content_image = createScroller(itemdiv,'v');
+  let img = createDatapointImage(data['url']);
+  scroll_content_image.appendChild(img);
+
   let p = document.createElement('p');
   p.innerHTML = '<b>Question</b><br>'+data['question']+'<br><b>Answer</b><br>'+data['answer'];
-  itemdiv.appendChild(img);
-  itemdiv.appendChild(p);
+
+  let scroll_content_text = createScroller(itemdiv,'v',height='300px');
+  scroll_content_text.appendChild(p);
+}
+
+function displayHaloQuest(itemdiv, data){
+  let scroll_content_image = createScroller(itemdiv,'v');
+  scroll_content_image.appendChild(createDatapointImage(data['url']));
+  
+  let scroll_content_text = createScroller(itemdiv,'v',height='200px');
+  let p = document.createElement('p');
+  p.innerHTML = '<b>Question</b><br>'+data['question']+'<br><b>Answer</b><br>'+data['answer'][0];
+  scroll_content_text.appendChild(p);
+}
+
+function displayRetrieval(itemdiv, data){
+  let scroll_content_image = createScroller(itemdiv,'v');
+  scroll_content_image.innerHTML+="<b>Groundtruth Image</b><br>";
+  scroll_content_image.appendChild(createDatapointImage(data['url']));
+
+  let scroll_content_text = createScroller(itemdiv,'v');
+  scroll_content_text.innerHTML += "<b>Groundtruth Text</b><br>";
+  data['captions'].forEach((caption) => {
+    let p = document.createElement('p');
+    p.innerHTML=caption;
+    scroll_content_text.appendChild(p);
+  });
+
+  let scroll_content_image_distractor = createScroller(itemdiv,'v');
+  scroll_content_image_distractor.innerHTML+="<b>Image Distractors</b><br>";
+  data['image_distractor_url'].forEach((distractor_url) => {
+    let distractor_img = createDatapointImage(distractor_url);
+    scroll_content_image_distractor.appendChild(distractor_img);
+  });
+
+  let scroll_content_text_neg = createScroller(itemdiv,'v');
+  scroll_content_text_neg.innerHTML += "<b>Text Distractors</b><br>";
+  data['text_distractors'].forEach((caption) => {
+    let p = document.createElement('p');
+    p.innerHTML=caption;
+    scroll_content_text_neg.appendChild(p);
+  });
+}
+
+function displayMultiImageVQA(itemdiv, data){
+  let scroll_content = createScroller(itemdiv,'v');
+  let img1 = createDatapointImage(data['url1']);
+
+  let img2 = createDatapointImage(data['url2']);
+  
+  scroll_content.appendChild(img1)
+  scroll_content.appendChild(img2)
+  
+  let scroll_content_text = createScroller(itemdiv,'v');
+
+  let p = document.createElement('p');
+  p.innerHTML = '<b>Question</b><br>'+data['question']+'<br><b>Answer</b><br>'+data['answer'];
+  scroll_content_text.appendChild(p)
+}
+
+function displayCaptioning(itemdiv, data){
+  let scroll_content_img = createScroller(itemdiv,'v');
+  scroll_content_img.appendChild(createDatapointImage(data['url']));
+  
+  let scroll_content = createScroller(itemdiv,'v');
+  scroll_content.innerHTML += "<b>Captions</b><br>";
+  data['captions'].forEach((caption) => {
+    let p = document.createElement('p');
+    p.innerHTML=caption;
+    scroll_content.appendChild(p);
+  });
+}
+function getDisplayData(task){
+  switch (task) {
+    case "MCOT":
+      return displayMCOT
+    case "Multi-image VQA":
+      return displayMultiImageVQA;
+    case "Imaginary Image Captioning":
+      return displayCaptioning;
+    case "HaloQuest":
+      return displayHaloQuest
+    case "Cross-modal Retrieval":
+      return displayRetrieval
+    default:
+      throw new Error('Invalid task: ' + task); 
+  }  
 }
 function displayDatapoints(task) {
   // Step 1: Load the JSON file
   let navbar = document.getElementById('browser-navbar');
   navbar.innerText = task;
-  let displayData = displayMCOT;
-  fetch(`./static/examples/${task}.json`)
+  let displayData = getDisplayData(task);
+  fetch(`./static/data/${task}.json`)
       .then(response => {
           if (!response.ok) {
               throw new Error(`Failed to load ${task}.json`);
@@ -72,6 +180,25 @@ function displayDatapoints(task) {
       .catch(error => {
           console.error('Error:', error);
       });
+      setImageHeights();
+}
+
+function setImageHeights(){
+  const images = document.querySelectorAll('.datapointImg');
+  let minHeight = Infinity;
+
+  // Find the shortest image height
+  images.forEach(img => {
+    img.onload = function() {
+      if (img.height < minHeight) {
+        minHeight = img.height;
+      }
+      // After all images are loaded, set their heights to the shortest one
+      images.forEach(img => {
+        img.style.height = minHeight + 'px';
+      });
+    };
+  });
 }
 
 function populateTable(data) {
