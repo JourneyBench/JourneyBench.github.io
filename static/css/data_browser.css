@@ -55,7 +55,6 @@
 .scroll-content-v {
     display: flex;
     flex-direction: column;
-    align-items: center;
     width: 100%;
 }
 
@@ -65,11 +64,13 @@
     height: auto;
     margin-bottom: 10px;
     object-fit: cover;
+    align-items: center;
 }
   
 .scroll-content-v p {
     font-size: 16px;
     color: #333;
+    align-items: left;
 }
 
 .scroll-container-v::-webkit-scrollbar {
