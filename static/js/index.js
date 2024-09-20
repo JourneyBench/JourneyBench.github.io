@@ -71,9 +71,9 @@ function displayRetrieval(itemdiv, data){
 
   let scroll_content_text = createScroller(itemdiv,'v');
   scroll_content_text.innerHTML += "<b>Groundtruth Text</b><br>";
-  data['captions'].forEach((caption) => {
+  data['captions'].forEach((caption, index) => {
     let p = document.createElement('p');
-    p.innerHTML=caption;
+    p.innerHTML=`<b>${index+1}. </b> ${caption.replace(/["]/g, "")}`;
     scroll_content_text.appendChild(p);
   });
 
@@ -86,9 +86,9 @@ function displayRetrieval(itemdiv, data){
 
   let scroll_content_text_neg = createScroller(itemdiv,'v');
   scroll_content_text_neg.innerHTML += "<b>Text Distractors</b><br>";
-  data['text_distractors'].forEach((caption) => {
+  data['text_distractors'].forEach((caption,index) => {
     let p = document.createElement('p');
-    p.innerHTML=caption;
+    p.innerHTML=`<b>${index+1}. </b> ${caption.replace(/["]/g, "")}`;
     scroll_content_text_neg.appendChild(p);
   });
 }
@@ -115,9 +115,9 @@ function displayCaptioning(itemdiv, data){
   
   let scroll_content = createScroller(itemdiv,'v');
   scroll_content.innerHTML += "<b>Captions</b><br>";
-  data['captions'].forEach((caption) => {
+  data['captions'].forEach((caption, index) => {
     let p = document.createElement('p');
-    p.innerHTML=caption;
+    p.innerHTML=`<b>${index+1}. </b> ${caption.replace(/["]/g, "")}`;
     scroll_content.appendChild(p);
   });
 }
